@@ -4,14 +4,11 @@ import time
 import subprocess
 import numpy as np
 from threading import Thread
-from pathlib import Path
-import mimetypes
-import shutil
 
 # ========================= ASCII CONVERSION ========================= #
 def convert_frame_to_ascii(frame, width=80, color=False):
     """
-    Convert a video frame or image into ASCII art.
+    Convert a video frame into ASCII art.
     """
     ascii_chars = np.asarray(list(" .:-=+*#%@"))
     h, w, _ = frame.shape
@@ -62,66 +59,29 @@ def play_video_in_terminal(video_path, width=80, fps=None, color=False, with_sou
     video_fps = cap.get(cv2.CAP_PROP_FPS) or 24
     delay = 1.0 / (fps or video_fps)
 
-    # Auto-fit width to terminal size
-    term_cols = shutil.get_terminal_size().columns
-    width = min(width, term_cols - 4)
-
     if with_sound:
         Thread(target=play_audio, args=(video_path,), daemon=True).start()
         time.sleep(0.4)  # sync sound and video
 
-    print("\033[?25l", end="")  # Hide cursor
     try:
-        start_time = time.time()
         while True:
             ret, frame = cap.read()
             if not ret:
                 break
 
             ascii_frame = convert_frame_to_ascii(frame, width, color)
-            print("\033[H" + ascii_frame)  # No flicker terminal overwrite
+            os.system('cls' if os.name == 'nt' else 'clear')
+            print(ascii_frame)
             time.sleep(delay)
     except KeyboardInterrupt:
         print("\n⏹️ Playback stopped by user.")
     finally:
         cap.release()
-        print("\033[?25h")  # Show cursor
         print("\n✅ Playback finished.")
-
-# ========================= IMAGE HANDLER ========================= #
-def show_image_in_ascii(image_path, width=80, color=False):
-    """
-    Convert and display a single image as ASCII art.
-    """
-    if not os.path.exists(image_path):
-        print(f"❌ File not found: {image_path}")
-        return
-
-    image = cv2.imread(image_path)
-    if image is None:
-        print("❌ Unsupported or corrupted image.")
-        return
-
-    # Auto-fit to terminal width
-    term_cols = shutil.get_terminal_size().columns
-    width = min(width, term_cols - 4)
-
-    ascii_art = convert_frame_to_ascii(image, width, color)
-    print(ascii_art)
-    print("\n✅ Image displayed as ASCII.")
-
-# ========================= TYPE DETECTOR ========================= #
-def is_video_file(path):
-    mime_type, _ = mimetypes.guess_type(path)
-    return mime_type and mime_type.startswith("video")
-
-def is_image_file(path):
-    mime_type, _ = mimetypes.guess_type(path)
-    return mime_type and mime_type.startswith("image")
 
 # ========================= MAIN ========================= #
 if __name__ == "__main__":
-    media_path = input("🎥 Media path (image or video): ").strip()
+    video_path = input("🎥 Video path: ").strip()
     width = input("📏 Width (default 80): ").strip()
     fps = input("🎞️ FPS (0 = auto): ").strip()
     color = input("🌈 Enable color? (y/n): ").strip().lower() in ("y", "yes")
@@ -130,9 +90,4 @@ if __name__ == "__main__":
     width = int(width) if width.isdigit() else 80
     fps = int(fps) if fps.isdigit() and int(fps) > 0 else None
 
-    if is_video_file(media_path):
-        play_video_in_terminal(media_path, width, fps, color, sound)
-    elif is_image_file(media_path):
-        show_image_in_ascii(media_path, width, color)
-    else:
-        print("❌ Unsupported file type. Please provide a valid image or video.")
+    play_video_in_terminal(video_path, width, fps, color, sound)
