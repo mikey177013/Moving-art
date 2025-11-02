@@ -87,13 +87,13 @@ Works best in full-screen terminal mode.
 ---
 
 📂 Project Structure
-
+```
 Moving-art/
 ├── main.py              # Main player script
 ├── README.md            # Project documentation
 ├── requirements.txt     # Dependencies (optional)
 └── sample_videos/       # (Optional) demo videos
-
+```
 
 ---
 
