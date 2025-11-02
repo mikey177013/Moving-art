@@ -121,7 +121,7 @@ If you like this project — give it a ⭐ on GitHub!
 
 ---
 ```
-"My life was nothing but suffering.”
+"My life has been nothing but suffering.”
 — Mikey
 ```
 ---
