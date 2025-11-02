@@ -5,7 +5,7 @@ div align="center">
 
 [![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Made with ❤️ by Master Phoenix](https://img.shields.io/badge/Made%20with%20❤️%20by-Master%20Phoenix-red)](https://github.com/mikey177013)
+[![Made with ❤️ by Master Phoenix](https://img.shields.io/badge/Made%20with%20❤️%20by-%20Phoenix-red)](https://github.com/mikey177013)
 
 <img src="https://github.com/mikey177013/Moving-art/assets/your-image-id" width="80%">
 
