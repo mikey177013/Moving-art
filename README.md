@@ -121,9 +121,7 @@ If you like this project — give it a ⭐ on GitHub!
 
 ---
 ```
-<div align="center">“Where pixels meet poetry — and every frame tells a story.”
-<br>— Master Phoenix
-
-</div>
+"My life was nothing but suffering.”
+— Mikey
 ```
 ---
