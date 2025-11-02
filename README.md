@@ -113,14 +113,14 @@ ASCII Renderer	Custom frame-to-character converter
 
 🧔 Credits
 
-Developed with ❤️ by Master Phoenix
+Developed by Phoenix 
 Maintained under the MIT License
 
 If you like this project — give it a ⭐ on GitHub!
 
 
 ---
-
+```
 <div align="center">“Where pixels meet poetry — and every frame tells a story.”
 <br>— Master Phoenix
 
