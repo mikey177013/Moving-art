@@ -3,14 +3,12 @@ import os
 import time
 import subprocess
 import numpy as np
-from shutil import get_terminal_size
 from threading import Thread
 
 # ---------------------------- ASCII CONVERSION ---------------------------- #
 def convert_frame_to_ascii(frame, width=80, color=False):
     """
-    Convert a video frame to ASCII art.
-    Supports grayscale and optional color output.
+    Convert a video frame to ASCII art (grayscale or color).
     """
     ascii_chars = np.asarray(list(" .:-=+*#%@"))
     h, w, _ = frame.shape
@@ -24,29 +22,29 @@ def convert_frame_to_ascii(frame, width=80, color=False):
     ascii_img = ascii_chars[indices]
 
     if color:
-        colored = ""
+        result = []
         for i, row in enumerate(resized):
+            line = []
             for j, pixel in enumerate(row):
                 b, g, r = pixel
                 char = ascii_img[i, j]
-                colored += f"\033[38;2;{r};{g};{b}m{char}\033[0m"
-            colored += "\n"
-        return colored
+                line.append(f"\033[38;2;{r};{g};{b}m{char}\033[0m")
+            result.append("".join(line))
+        return "\n".join(result)
     else:
         return "\n".join("".join(row) for row in ascii_img)
 
 # ---------------------------- SOUND PLAYER ---------------------------- #
 def play_audio(video_path):
     """
-    Play audio from the given video using ffplay (FFmpeg).
-    Suppresses video display from ffplay (sound only).
+    Play video audio via ffplay silently in background (no video output).
     """
     try:
         subprocess.run(
             [
                 "ffplay",
-                "-nodisp",   # no display
-                "-autoexit", # stop when done
+                "-nodisp",
+                "-autoexit",
                 "-loglevel", "quiet",
                 video_path
             ],
@@ -54,12 +52,12 @@ def play_audio(video_path):
             stderr=subprocess.DEVNULL
         )
     except FileNotFoundError:
-        print("⚠️ FFmpeg not found. Install it to enable sound (https://ffmpeg.org).")
+        print("⚠️ FFmpeg not found. Install FFmpeg for audio support.")
 
 # ---------------------------- VIDEO PLAYER ---------------------------- #
 def play_video_in_terminal(video_path, width=80, fps=None, color=False, with_sound=True):
     """
-    Play video in ASCII form in terminal, with optional sound playback.
+    Plays ASCII video smoothly with optional color and sound.
     """
     if not os.path.exists(video_path):
         print(f"❌ Error: File not found -> {video_path}")
@@ -67,58 +65,41 @@ def play_video_in_terminal(video_path, width=80, fps=None, color=False, with_sou
 
     cap = cv2.VideoCapture(video_path)
     video_fps = cap.get(cv2.CAP_PROP_FPS) or 24
-    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     delay = 1.0 / (fps or video_fps)
-    term_width = get_terminal_size().columns
 
-    print(f"\n🎬 Playing '{os.path.basename(video_path)}' with sound: {'ON' if with_sound else 'OFF'}")
-    print("-" * term_width)
-
-    # Start audio playback in a separate thread
+    # Start audio thread
     if with_sound:
         audio_thread = Thread(target=play_audio, args=(video_path,), daemon=True)
         audio_thread.start()
-        time.sleep(0.5)  # slight delay for sync alignment
+        time.sleep(0.3)  # short delay to sync sound
 
     try:
-        start_time = time.time()
-        frame_count = 0
-
         while True:
             ret, frame = cap.read()
             if not ret:
                 break
 
             ascii_frame = convert_frame_to_ascii(frame, width, color)
-            os.system('cls' if os.name == 'nt' else 'clear')
+
+            # Faster screen refresh using escape codes instead of clear command
+            print("\033[H\033[J", end="")  # moves cursor to top & clears screen
             print(ascii_frame)
 
-            frame_count += 1
-            progress = frame_count / total_frames
-            bar = int(progress * (term_width - 20))
-            print(f"\n[{('=' * bar).ljust(term_width - 20)}] {progress*100:5.1f}%")
-
-            elapsed = time.time() - start_time
-            expected = frame_count * delay
-            sleep_time = expected - elapsed
-            if sleep_time > 0:
-                time.sleep(sleep_time)
+            time.sleep(delay)
 
     except KeyboardInterrupt:
-        print("\n⏹️ Playback stopped by user.")
+        print("\n⏹️ Interrupted by user.")
 
     finally:
         cap.release()
-        print("\n✅ Video finished.")
-        if with_sound:
-            audio_thread.join(timeout=1)
+        print("\n✅ Playback finished.")
 
 # ---------------------------- MAIN ---------------------------- #
 if __name__ == "__main__":
     video_path = input("🎥 Enter video path: ").strip()
-    width_input = input("📏 Enter terminal width (default 80): ").strip()
-    fps_input = input("🎞️  Enter FPS (0 = auto): ").strip()
-    color_choice = input("🌈 Enable color output? (y/n): ").strip().lower()
+    width_input = input("📏 Enter width (default 80): ").strip()
+    fps_input = input("🎞️ FPS (0 = auto): ").strip()
+    color_choice = input("🌈 Enable color? (y/n): ").strip().lower()
     sound_choice = input("🔊 Play sound? (y/n): ").strip().lower()
 
     width = int(width_input) if width_input.isdigit() else 80
