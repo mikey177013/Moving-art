@@ -1,6 +1,6 @@
 <div align="center">
 
-#🎞️ MOVING-ART  
+##🎞️ MOVING-ART  
 ### _Turn any video into pure ASCII magic — right in your terminal._  
 
 [![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)](https://www.python.org/)
