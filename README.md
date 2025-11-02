@@ -4,7 +4,7 @@
 ### _Turn any video into pure ASCII magic — right in your terminal._  
 
 [![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/mikey177013/Moving-art/blob/main/lisence%2FLISENCE)
 [![Made with ❤️ by  Phoenix](https://img.shields.io/badge/Made%20with%20❤️%20by-%20Phoenix-red)](https://github.com/mikey177013)
 
 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfMSwcXISpSqJlesWPK7CEu9iQplhBHTJLEfMiBtNSrsWZmhczr7x-RE8z&s=10" width="80%">
