@@ -8,7 +8,7 @@ from threading import Thread
 # ---------------------------- ASCII CONVERSION ---------------------------- #
 def convert_frame_to_ascii(frame, width=80, color=False):
     """
-    Convert a video frame to ASCII art (grayscale or color).
+    Convert a video frame to ASCII art.
     """
     ascii_chars = np.asarray(list(" .:-=+*#%@"))
     h, w, _ = frame.shape
@@ -22,22 +22,22 @@ def convert_frame_to_ascii(frame, width=80, color=False):
     ascii_img = ascii_chars[indices]
 
     if color:
-        result = []
+        colored_lines = []
         for i, row in enumerate(resized):
             line = []
             for j, pixel in enumerate(row):
                 b, g, r = pixel
                 char = ascii_img[i, j]
                 line.append(f"\033[38;2;{r};{g};{b}m{char}\033[0m")
-            result.append("".join(line))
-        return "\n".join(result)
+            colored_lines.append("".join(line))
+        return "\n".join(colored_lines)
     else:
         return "\n".join("".join(row) for row in ascii_img)
 
 # ---------------------------- SOUND PLAYER ---------------------------- #
 def play_audio(video_path):
     """
-    Play video audio via ffplay silently in background (no video output).
+    Play video audio in background using FFplay.
     """
     try:
         subprocess.run(
@@ -52,12 +52,12 @@ def play_audio(video_path):
             stderr=subprocess.DEVNULL
         )
     except FileNotFoundError:
-        print("⚠️ FFmpeg not found. Install FFmpeg for audio support.")
+        print("⚠️ FFmpeg not found. Install it to enable sound (https://ffmpeg.org).")
 
 # ---------------------------- VIDEO PLAYER ---------------------------- #
 def play_video_in_terminal(video_path, width=80, fps=None, color=False, with_sound=True):
     """
-    Plays ASCII video smoothly with optional color and sound.
+    Play video as ASCII art in terminal with optional sound.
     """
     if not os.path.exists(video_path):
         print(f"❌ Error: File not found -> {video_path}")
@@ -71,7 +71,7 @@ def play_video_in_terminal(video_path, width=80, fps=None, color=False, with_sou
     if with_sound:
         audio_thread = Thread(target=play_audio, args=(video_path,), daemon=True)
         audio_thread.start()
-        time.sleep(0.3)  # short delay to sync sound
+        time.sleep(0.4)  # small delay to sync with sound
 
     try:
         while True:
@@ -81,18 +81,18 @@ def play_video_in_terminal(video_path, width=80, fps=None, color=False, with_sou
 
             ascii_frame = convert_frame_to_ascii(frame, width, color)
 
-            # Faster screen refresh using escape codes instead of clear command
-            print("\033[H\033[J", end="")  # moves cursor to top & clears screen
+            # Use actual clear command — smoother and prevents stacking
+            os.system('cls' if os.name == 'nt' else 'clear')
             print(ascii_frame)
 
             time.sleep(delay)
 
     except KeyboardInterrupt:
-        print("\n⏹️ Interrupted by user.")
+        print("\n⏹️ Playback interrupted.")
 
     finally:
         cap.release()
-        print("\n✅ Playback finished.")
+        print("\n✅ Video playback finished.")
 
 # ---------------------------- MAIN ---------------------------- #
 if __name__ == "__main__":
